@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>React js and Props</title>
+    <link rel="stylesheet" href="../css/main.css" type="text/css">
+    <script src="https://unpkg.com/react@15/dist/react.js"></script>
+    <script src="https://unpkg.com/react-dom@15/dist/react-dom.js"></script>
+    <script src="../js/browser.min.js"></script>
+</head>
+<body>
+
+      <div id="container"></div>
+      <script type="text/babel">
+         var Comment=React.createClass(
+
+             {
+                 getInitialState : function () {
+                       return {editing :false}
+                 },
+
+                 Edit: function ()
+                 {
+                     this.setState({editing:true})
+                 },
+                 Save: function ()
+                 {
+                     var value=this.refs.newtext.value;
+                     this.props.updateProp(this.props.index,value);
+                     this.setState({editing:false})
+                 },
+                 Remove : function()
+                 {
+                     this.props.removingProp(this.props.index);
+
+                 },
+                 EditMode:function () {
+                     return(
+                             <div className="commentContainer">
+                                  <textarea ref="newtext"name="text" defaultValue={this.props.children}></textarea>
+                                 <button onClick={this.Save} className="button-success">Save</button>
+                             </div>
+                     )
+                 },
+                 NormalState : function () {
+                     return(
+                             <div className="commentContainer">
+                                 <div id="message" className="commentText"> {this.props.children}</div>
+                                 <button onClick={this.Edit} className="button-primary">Edit</button>
+                                 <button onClick={this.Remove} className="button-danger">Removing</button>
+                             </div>
+                     )
+                 },
+
+              render : function () {
+                       if(this.state.editing) return this.EditMode();
+                       else return this.NormalState();
+              }
+             }
+         );
+
+         var Comments =React.createClass(
+             {
+                 getInitialState :function () {
+                     return{
+                         comments:[
+
+                         ]
+                     }
+                 },
+              addNewComment:function (text) {
+                     var arr=this.state.comments;
+                     arr.push(text);
+                     this.setState({comments:arr});
+
+              }
+             ,
+                 RemoveComment:function (i) {
+                     console.log("removing the comment in the index of "+i);
+                     var arr=this.state.comments;
+                     arr.splice(i,1);
+                     this.setState({comments:arr});
+                 },
+                 UpdatingComment:function (i,newText) {
+                     console.log("update+++++"+ i);
+                     var arr=this.state.comments;
+                     arr[i]=newText;
+                     this.setState({comments:arr});
+                 }
+                 ,
+
+                 eachComment:function (text,i) {
+                     return(<Comment key={i} index={i} updateProp={this.UpdatingComment} removingProp={this.RemoveComment}>{text}</Comment>);
+                 },
+
+                 render : function () {
+
+                     return(
+                         <div>
+                             <button className="button-info" onClick={this.addNewComment.bind(null,"")}>Add Comment</button>
+                             <div className="board">
+
+                                 {
+                                     this.state.comments.map(this.eachComment)
+                                 }
+                             </div>
+                         </div>
+                     );
+
+                 }
+
+             }
+
+
+         );
+         ReactDOM.render(<Comments />,document.getElementById('container'));
+
+
+      </script>
+
+</body>
+</html>
